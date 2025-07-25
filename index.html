@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Unwinnable Game</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #282c34;
+            color: #f8f8f2;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars from game */
+        }
+        h1 {
+            color: #61dafb;
+            margin-bottom: 20px;
+        }
+        canvas {
+            background-color: #3a3f4b;
+            border: 2px solid #61dafb;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(97, 218, 251, 0.5);
+            display: block;
+            margin-bottom: 20px;
+        }
+        #score-display {
+            font-size: 1.5em;
+            margin-top: 10px;
+            color: #a0a0a0;
+        }
+        .instructions {
+            background-color: #3a3f4b;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            margin-top: 20px;
+            max-width: 500px;
+            text-align: left;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .instructions h2 {
+            color: #f8f8f2;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        .instructions p {
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #ccc;
+        }
+        .instructions ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            padding-left: 0;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        /* The hidden link container */
+        #secret-winner-link-container {
+            /* This is the key to hiding it visually */
+            display: none;
+            /* You can also try:
+            visibility: hidden;
+            opacity: 0;
+            font-size: 0;
+            color: transparent;
+            position: absolute; left: -9999px;
+            */
+        }
+        #secret-winner-link-container a {
+            color: #4CAF50; /* Just in case it ever shows up */
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.1px; /* Make it tiny if somehow rendered */
+        }
+    </style>
+</head>
+<body>
+    <h1>Catch the Uncatchable!</h1>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="score-display">Score: 0</div>
+
+    <div class="instructions">
+        <h2>How to Play:</h2>
+        <ul>
+            <li>Use the **Left and Right Arrow Keys** to move your player (the green square) at the bottom.</li>
+            <li>Catch the falling blue circles to increase your score.</li>
+            <li>Reach a score of **1,000,000** to win!</li>
+            <li>Good luck! You'll need it.</li>
+        </ul>
+        <p><em>(Hint: This game is designed to be extremely difficult, almost impossible, through normal play. Perhaps there's another way to find the "winner" page?)</em></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score-display');
+
+        let player = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 50,
+            width: 50,
+            height: 20,
+            color: '#4CAF50', // Green
+            speed: 5 // Player moves slowly
+        };
+
+        let fallingItems = [];
+        let score = 0;
+        let gameOver = false;
+        const WIN_SCORE = 1000000; // Extremely high win score
+
+        // Item properties
+        const ITEM_RADIUS = 10;
+        const ITEM_COLOR = '#61dafb'; // Blue
+        const ITEM_SPEED = 4; // Items fall relatively fast
+        const ITEM_SPAWN_INTERVAL = 500; // Spawn every 0.5 seconds
+
+        let lastSpawnTime = 0;
+
+        // Event Listeners for player movement
+        let keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Game Loop
+        function gameLoop(currentTime) {
+            if (gameOver) return;
+
+            update();
+            draw();
+
+            // Spawn new items
+            if (currentTime - lastSpawnTime > ITEM_SPAWN_INTERVAL) {
+                spawnItem();
+                lastSpawnTime = currentTime;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            // Player movement
+            if (keys['ArrowLeft'] && player.x > 0) {
+                player.x -= player.speed;
+            }
+            if (keys['ArrowRight'] && player.x + player.width < canvas.width) {
+                player.x += player.speed;
+            }
+
+            // Update falling items
+            for (let i = 0; i < fallingItems.length; i++) {
+                let item = fallingItems[i];
+                item.y += item.speed;
+
+                // Check for collision with player
+                if (
+                    item.y + ITEM_RADIUS > player.y &&
+                    item.y - ITEM_RADIUS < player.y + player.height &&
+                    item.x + ITEM_RADIUS > player.x &&
+                    item.x - ITEM_RADIUS < player.x + player.width
+                ) {
+                    score++;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    fallingItems.splice(i, 1); // Remove caught item
+                    i--; // Adjust index after removal
+                } else if (item.y - ITEM_RADIUS > canvas.height) {
+                    // Item fell off screen
+                    fallingItems.splice(i, 1);
+                    i--;
+                }
+            }
+
+            // Game over condition (if score is too high, or some other impossible condition)
+            if (score >= WIN_SCORE) {
+                gameOver = true;
+                // In a real game, you'd redirect or show a win message.
+                // For this challenge, the win is found via source code.
+                alert("You somehow won the impossible game! But the flag isn't here. Check the source code for the real winner's page.");
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+
+            // Draw player
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            // Draw falling items
+            ctx.fillStyle = ITEM_COLOR;
+            for (let item of fallingItems) {
+                ctx.beginPath();
+                ctx.arc(item.x, item.y, ITEM_RADIUS, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+
+        function spawnItem() {
+            let x = Math.random() * (canvas.width - ITEM_RADIUS * 2) + ITEM_RADIUS;
+            fallingItems.push({
+                x: x,
+                y: -ITEM_RADIUS, // Start above canvas
+                speed: ITEM_SPEED
+            });
+        }
+
+        // Start the game loop
+        requestAnimationFrame(gameLoop);
+    </script>
+
+    <!--
+        *********************************************************************************
+        * This section contains a secret link that is not visible during normal play.   *
+        * Players are expected to inspect the page's source code to find this link.     *
+        * It's hidden using 'display: none;' CSS property.                              *
+        *********************************************************************************
+    -->
+    <div id="secret-winner-link-container" style="display: none;">
+        <p>Congratulations, clever hacker! You found the secret path!</p>
+        <a href="winner.html">Click here to claim your prize!</a>
+    </div>
+    <!-- End of secret link section -->
+
+</body>
+</html>
