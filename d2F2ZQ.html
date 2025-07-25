@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're a Winner!</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            text-align: center;
+        }
+        h1 {
+            color: #28a745;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .flag-container {
+            background-color: #ffffff;
+            border: 3px solid #007bff;
+            border-radius: 15px;
+            padding: 40px 60px;
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
+            animation: pulse 1.5s infinite alternate;
+        }
+        .flag {
+            font-size: 2em;
+            font-weight: bold;
+            color: #dc3545;
+            word-break: break-all; /* Ensures long flags wrap */
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2); }
+            to { transform: scale(1.05); box-shadow: 0 15px 30px rgba(0, 123, 255, 0.4); }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 Congratulations, True Winner! 🎉</h1>
+    <p>You didn't just play the game, you understood it. The flag is your reward!</p>
+    <div class="flag-container">
+        <div class="flag">
+            <code>flag{S0urc3_C0d3_R3v34L5_4ll_S3cr3t5_G4m30v3r}</code>
+        </div>
+    </div>
+    <p style="margin-top: 40px;">Copy this flag and submit it to CTFd.</p>
+</body>
+</html>
