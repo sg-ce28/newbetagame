@@ -85,7 +85,10 @@
     <h1>Catch the Uncatchable!</h1>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <div id="score-display">Score: 0</div>
-
+    <div id="secret-winner-link-container" style="display: none;">
+        <p>Congratulations, clever hacker! You found the secret path!</p>
+        <a href="d2F2ZQ.html">Click here to claim your prize!</a>
+    </div>
     <div class="instructions">
         <h2>How to Play:</h2>
         <ul>
@@ -218,19 +221,6 @@
         // Start the game loop
         requestAnimationFrame(gameLoop);
     </script>
-
-    <!--
-        *********************************************************************************
-        * This section contains a secret link that is not visible during normal play.   *
-        * Players are expected to inspect the page's source code to find this link.     *
-        * It's hidden using 'display: none;' CSS property.                              *
-        *********************************************************************************
-    -->
-    <div id="secret-winner-link-container" style="display: none;">
-        <p>Congratulations, clever hacker! You found the secret path!</p>
-        <a href="d2F2ZQ.html">Click here to claim your prize!</a>
-    </div>
-    <!-- End of secret link section -->
 
 </body>
 </html>
